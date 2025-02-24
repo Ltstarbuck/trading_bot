@@ -1,0 +1,30 @@
+# Risk Management Configuration
+
+# Position Sizing
+position_sizing:
+  max_position_size: 0.1  # Maximum size of any single position (10% of account)
+  risk_per_trade: 0.01    # Risk per trade (1% of account)
+  max_positions: 5        # Maximum number of concurrent positions
+
+# Stop Loss
+stop_loss:
+  default_stop_loss: 0.02     # Default stop loss percentage
+  trailing_stop: 0.01         # Trailing stop percentage
+  atr_multiplier: 2.0         # Multiplier for ATR-based stops
+  break_even_trigger: 0.01    # Move to break even after 1% profit
+
+# Risk Monitoring
+risk_monitoring:
+  max_drawdown: 0.15          # Maximum drawdown allowed (15%)
+  max_daily_loss: 0.05        # Maximum daily loss allowed (5%)
+  max_leverage: 3.0           # Maximum leverage allowed
+  max_concentration: 0.3      # Maximum concentration in single asset (30%)
+  warning_threshold: 0.8      # Warning at 80% of limit
+  critical_threshold: 0.95    # Critical alert at 95% of limit
+
+# Liquidity Requirements
+liquidity:
+  min_liquidity_ratio: 3.0    # Minimum ratio of liquidity to position size
+  max_slippage: 0.01          # Maximum allowed slippage
+  volume_window: 24           # Hours for volume calculation
+  liquidity_threshold: 1000.0 # Minimum liquidity in base currency

@@ -1,0 +1,168 @@
+# GUI Configuration
+
+# Window Settings
+window:
+  title: Trading Bot
+  width: 1600
+  height: 900
+  min_width: 1200
+  min_height: 700
+  background_color: "#1E1E1E"
+  
+# Theme
+theme:
+  # Colors
+  colors:
+    primary: "#007ACC"
+    secondary: "#6C757D"
+    success: "#28A745"
+    danger: "#DC3545"
+    warning: "#FFC107"
+    info: "#17A2B8"
+    light: "#F8F9FA"
+    dark: "#343A40"
+    
+  # Text
+  text:
+    font_family: "Segoe UI"
+    default_size: 12
+    header_size: 14
+    title_size: 16
+    
+  # Components
+  components:
+    button_height: 30
+    input_height: 25
+    padding: 10
+    border_radius: 4
+
+# Layout
+layout:
+  # Trading Panel
+  trading_panel:
+    position: left
+    width: 300
+    collapsible: true
+    
+  # Chart Widget
+  chart:
+    position: center
+    height_ratio: 0.6
+    default_timeframe: "1h"
+    max_candles: 1000
+    
+  # Order Book
+  order_book:
+    position: right
+    width: 250
+    depth: 20
+    update_frequency: 1000  # ms
+    
+  # Position Table
+  position_table:
+    position: bottom
+    height_ratio: 0.2
+    columns:
+      - Symbol
+      - Side
+      - Size
+      - Entry Price
+      - Current Price
+      - P&L
+      - P&L %
+      - Stop Loss
+      - Take Profit
+
+# Chart Settings
+chart:
+  # Candle Display
+  candles:
+    up_color: "#28A745"
+    down_color: "#DC3545"
+    wick_color: "#6C757D"
+    
+  # Grid
+  grid:
+    show: true
+    color: "#2D2D2D"
+    
+  # Volume
+  volume:
+    show: true
+    height_ratio: 0.2
+    
+  # Default Indicators
+  indicators:
+    - name: "SMA"
+      params: [20]
+      color: "#007ACC"
+    - name: "SMA"
+      params: [50]
+      color: "#FFC107"
+    - name: "RSI"
+      params: [14]
+      color: "#17A2B8"
+
+# Trading Panel Settings
+trading_panel:
+  # Order Types
+  order_types:
+    - Market
+    - Limit
+    - Stop
+    - Stop Limit
+    
+  # Default Values
+  defaults:
+    order_type: "Market"
+    time_in_force: "GTC"
+    post_only: false
+    
+  # Quick Trade Buttons
+  quick_trade:
+    enabled: true
+    sizes: [0.01, 0.05, 0.1, 0.5, 1.0]
+
+# Order Book Settings
+order_book:
+  # Display
+  grouping: 0.1  # Price grouping percentage
+  decimals: 2
+  
+  # Colors
+  asks_color: "#DC3545"
+  bids_color: "#28A745"
+  
+  # Depth Chart
+  depth_chart:
+    show: true
+    height_ratio: 0.3
+
+# Position Table Settings
+position_table:
+  # Display
+  show_closed: false
+  update_frequency: 1000  # ms
+  
+  # Sorting
+  default_sort: "P&L"
+  sort_direction: "descending"
+  
+  # Highlighting
+  highlight:
+    profit_color: "#28A745"
+    loss_color: "#DC3545"
+    threshold: 0.0
+
+# Notifications
+notifications:
+  # Types
+  show_orders: true
+  show_fills: true
+  show_stops: true
+  show_errors: true
+  
+  # Display
+  position: "top-right"
+  duration: 5000  # ms
+  max_notifications: 5

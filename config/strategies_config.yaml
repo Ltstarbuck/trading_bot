@@ -1,0 +1,129 @@
+# Trading Strategies Configuration
+
+# Global Strategy Settings
+global:
+  # Default timeframe for all strategies
+  default_timeframe: "1h"
+  
+  # Maximum lookback period for indicators
+  max_lookback: 200
+  
+  # Default trading schedule
+  trading_schedule:
+    enabled: true
+    start_time: "00:00"
+    end_time: "23:59"
+    timezone: "UTC"
+  
+  # Position management
+  position_management:
+    take_profit: 0.03  # 3%
+    stop_loss: 0.02    # 2%
+    trailing_stop: 0.01 # 1%
+
+# Strategy Definitions
+strategies:
+  # Moving Average Crossover Strategy
+  ma_cross:
+    enabled: true
+    
+    # Parameters
+    params:
+      fast_period: 20
+      slow_period: 50
+      signal_threshold: 0
+    
+    # Trading pairs
+    pairs:
+      - "BTC/USD"
+      - "ETH/USD"
+    
+    # Risk settings
+    risk:
+      position_size: 0.1  # 10% of equity
+      max_positions: 2
+    
+    # Filters
+    filters:
+      min_volume: 1000000  # Minimum 24h volume in USD
+      min_price: 100      # Minimum price in USD
+      
+  # RSI Strategy
+  rsi:
+    enabled: true
+    
+    # Parameters
+    params:
+      period: 14
+      overbought: 70
+      oversold: 30
+      
+    # Trading pairs
+    pairs:
+      - "BTC/USD"
+      - "ETH/USD"
+      
+    # Risk settings
+    risk:
+      position_size: 0.05  # 5% of equity
+      max_positions: 3
+      
+    # Filters
+    filters:
+      min_volume: 500000   # Minimum 24h volume in USD
+      max_spread: 0.002    # Maximum spread 0.2%
+      
+  # Volatility Strategy
+  volatility:
+    enabled: true
+    
+    # Parameters
+    params:
+      atr_period: 14
+      atr_multiplier: 2
+      bollinger_period: 20
+      bollinger_std: 2
+      
+    # Trading pairs
+    pairs:
+      - "BTC/USD"
+      - "ETH/USD"
+      
+    # Risk settings
+    risk:
+      position_size: 0.08  # 8% of equity
+      max_positions: 2
+      
+    # Filters
+    filters:
+      min_volatility: 0.02  # Minimum daily volatility
+      max_volatility: 0.1   # Maximum daily volatility
+
+# Backtesting Settings
+backtesting:
+  # Default settings
+  default_deposit: 100000  # USD
+  fee_rate: 0.001         # 0.1%
+  slippage: 0.001         # 0.1%
+  
+  # Data settings
+  data:
+    source: "exchange"  # or "csv"
+    timeframe: "1h"
+    start_date: "2024-01-01"
+    end_date: "2025-01-01"
+    
+  # Performance metrics
+  metrics:
+    - "total_return"
+    - "sharpe_ratio"
+    - "max_drawdown"
+    - "win_rate"
+    - "profit_factor"
+    
+  # Optimization
+  optimization:
+    method: "grid"  # or "random"
+    iterations: 100
+    parallel: true
+    cpu_cores: 4

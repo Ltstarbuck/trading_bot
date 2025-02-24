@@ -1,0 +1,118 @@
+# Logging Configuration
+
+# Global Settings
+version: 1
+disable_existing_loggers: false
+
+# Formatters
+formatters:
+  standard:
+    format: '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  
+  detailed:
+    format: '%(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  
+  json:
+    class: pythonjsonlogger.jsonlogger.JsonFormatter
+    format: '%(asctime)s %(name)s %(levelname)s %(message)s'
+
+# Handlers
+handlers:
+  # Console Handler
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: standard
+    stream: ext://sys.stdout
+
+  # Main Log File
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: detailed
+    filename: logs/trading_bot.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 10
+    encoding: utf8
+
+  # Error Log File
+  error_file:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: detailed
+    filename: logs/error.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 10
+    encoding: utf8
+
+  # Trading Log File
+  trading:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: logs/trading.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 10
+    encoding: utf8
+
+  # Performance Log File
+  performance:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: logs/performance.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 5
+    encoding: utf8
+
+# Loggers
+loggers:
+  # Root Logger
+  '':
+    level: INFO
+    handlers: [console, file, error_file]
+    propagate: false
+
+  # Trading Logger
+  trading:
+    level: INFO
+    handlers: [trading, console]
+    propagate: false
+
+  # Exchange Logger
+  exchange:
+    level: INFO
+    handlers: [file, error_file]
+    propagate: false
+
+  # Risk Management Logger
+  risk:
+    level: INFO
+    handlers: [file, error_file]
+    propagate: false
+
+  # Portfolio Logger
+  portfolio:
+    level: INFO
+    handlers: [file, trading]
+    propagate: false
+
+  # Strategy Logger
+  strategy:
+    level: INFO
+    handlers: [file, trading]
+    propagate: false
+
+  # Performance Logger
+  performance:
+    level: INFO
+    handlers: [performance]
+    propagate: false
+
+  # GUI Logger
+  gui:
+    level: INFO
+    handlers: [file]
+    propagate: false

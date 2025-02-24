@@ -1,0 +1,104 @@
+# Exchange Configuration
+
+# Default exchange to use
+default_exchange: ftx
+
+# Global settings
+order_timeout: 30  # seconds
+max_retries: 3
+retry_delay: 5  # seconds
+
+# Exchange-specific settings
+exchanges:
+  ftx:
+    # API Configuration
+    api_url: https://ftx.com/api
+    websocket_url: wss://ftx.com/ws/
+    test_mode: false
+    
+    # Rate Limits
+    rate_limits:
+      orders_per_second: 8
+      orders_per_day: 150000
+      requests_per_minute: 1800
+    
+    # Trading Parameters
+    min_order_size: 10.0  # USD
+    max_order_size: 750000.0  # USD
+    price_precision: 6
+    quantity_precision: 8
+    
+    # Fees
+    maker_fee: 0.0002  # 0.02%
+    taker_fee: 0.0007  # 0.07%
+    
+    # Supported Order Types
+    order_types:
+      - LIMIT
+      - MARKET
+      - STOP
+      - STOP_LIMIT
+      - TRAILING_STOP
+
+  binance:
+    # API Configuration
+    api_url: https://api.binance.com/api/v3
+    websocket_url: wss://stream.binance.com:9443/ws
+    test_mode: false
+    
+    # Rate Limits
+    rate_limits:
+      orders_per_second: 10
+      orders_per_day: 200000
+      requests_per_minute: 1200
+    
+    # Trading Parameters
+    min_order_size: 10.0  # USD
+    max_order_size: 1000000.0  # USD
+    price_precision: 8
+    quantity_precision: 8
+    
+    # Fees
+    maker_fee: 0.001  # 0.1%
+    taker_fee: 0.001  # 0.1%
+    
+    # Supported Order Types
+    order_types:
+      - LIMIT
+      - MARKET
+      - STOP_LOSS
+      - STOP_LOSS_LIMIT
+      - TAKE_PROFIT
+      - TAKE_PROFIT_LIMIT
+      - LIMIT_MAKER
+
+  kraken:
+    # API Configuration
+    api_url: https://api.kraken.com/0
+    websocket_url: wss://ws.kraken.com
+    test_mode: false
+    
+    # Rate Limits
+    rate_limits:
+      orders_per_second: 5
+      orders_per_day: 100000
+      requests_per_minute: 900
+    
+    # Trading Parameters
+    min_order_size: 10.0  # USD
+    max_order_size: 500000.0  # USD
+    price_precision: 5
+    quantity_precision: 8
+    
+    # Fees
+    maker_fee: 0.0016  # 0.16%
+    taker_fee: 0.0026  # 0.26%
+    
+    # Supported Order Types
+    order_types:
+      - MARKET
+      - LIMIT
+      - STOP_LOSS
+      - TAKE_PROFIT
+      - STOP_LOSS_LIMIT
+      - TAKE_PROFIT_LIMIT

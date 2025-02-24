@@ -1,0 +1,199 @@
+# GUI Configuration
+
+# Window Settings
+window:
+  title: "Trading Bot"
+  width: 1280
+  height: 800
+  min_width: 800
+  min_height: 600
+  background_color: "#1E1E1E"
+  
+# Theme Settings
+theme:
+  # Color Scheme
+  colors:
+    primary: "#007ACC"
+    secondary: "#569CD6"
+    success: "#6A9955"
+    warning: "#CE9178"
+    error: "#F44747"
+    text_primary: "#D4D4D4"
+    text_secondary: "#808080"
+    background_primary: "#1E1E1E"
+    background_secondary: "#252526"
+    border: "#454545"
+    
+  # Font Settings
+  fonts:
+    main: "Segoe UI"
+    monospace: "Consolas"
+    sizes:
+      small: 10
+      normal: 12
+      large: 14
+      header: 16
+      
+  # Styles
+  styles:
+    button:
+      border_radius: 4
+      padding: [8, 16]
+      hover_color: "#2D2D2D"
+    input:
+      border_radius: 4
+      padding: [6, 12]
+      focus_color: "#007ACC"
+    table:
+      header_background: "#252526"
+      alternate_row_color: "#2D2D2D"
+      selected_row_color: "#094771"
+      
+# Layout Settings
+layout:
+  # Main Areas
+  areas:
+    - trading
+    - charts
+    - orders
+    - positions
+    - logs
+    
+  # Default Layout
+  default:
+    trading:
+      position: "left"
+      width: 300
+      collapsible: true
+    charts:
+      position: "center"
+      height: "60%"
+    orders:
+      position: "right"
+      width: 300
+      collapsible: true
+    positions:
+      position: "bottom"
+      height: "20%"
+    logs:
+      position: "bottom"
+      height: "20%"
+      
+# Chart Settings
+charts:
+  default_type: "candlestick"
+  supported_types:
+    - candlestick
+    - line
+    - area
+  timeframes:
+    - 1m
+    - 5m
+    - 15m
+    - 30m
+    - 1h
+    - 4h
+    - 1d
+  indicators:
+    - name: "Moving Average"
+      periods: [9, 20, 50, 200]
+    - name: "RSI"
+      period: 14
+    - name: "MACD"
+      settings:
+        fast: 12
+        slow: 26
+        signal: 9
+    - name: "Bollinger Bands"
+      period: 20
+  colors:
+    up: "#6A9955"
+    down: "#F44747"
+    volume: "#569CD6"
+    
+# Table Settings
+tables:
+  positions:
+    columns:
+      - Symbol
+      - Side
+      - Amount
+      - Entry Price
+      - Current Price
+      - Stop Loss
+      - Take Profit
+      - P&L
+      - Duration
+    refresh_rate: 1  # seconds
+    
+  orders:
+    columns:
+      - Symbol
+      - Type
+      - Side
+      - Amount
+      - Price
+      - Status
+      - Time
+    refresh_rate: 1  # seconds
+    
+  trades:
+    columns:
+      - Symbol
+      - Side
+      - Amount
+      - Entry Price
+      - Exit Price
+      - P&L
+      - Duration
+      - Time
+    max_rows: 1000
+    
+# Control Panel Settings
+controls:
+  trading_modes:
+    - Live
+    - Paper
+    - Backtest
+  order_types:
+    - Market
+    - Limit
+    - Stop
+    - Take Profit
+  risk_controls:
+    position_size:
+      min: 0.0001
+      max: 10.0
+      step: 0.0001
+    leverage:
+      options: [1, 2, 3, 5, 10, 20]
+    stop_loss:
+      min: 0.1
+      max: 10.0
+      step: 0.1
+      
+# Notification Settings
+notifications:
+  position_opened:
+    sound: true
+    popup: true
+  position_closed:
+    sound: true
+    popup: true
+  stop_loss_hit:
+    sound: true
+    popup: true
+  take_profit_hit:
+    sound: true
+    popup: true
+  error:
+    sound: true
+    popup: true
+    
+# Keyboard Shortcuts
+shortcuts:
+  cancel_all_orders: "Ctrl+Alt+C"
+  close_all_positions: "Ctrl+Alt+X"
+  toggle_trading: "Ctrl+T"
+  save_layout: "Ctrl+S"
+  reset_layout: "Ctrl+R"
