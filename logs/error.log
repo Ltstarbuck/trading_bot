@@ -1,0 +1,110 @@
+2025-02-23 23:39:32,980 [ERROR] trading_bot:159: Fatal error: MainWindow.__init__() takes 1 positional argument but 2 were given
+Traceback (most recent call last):
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 68, in main
+    sys.exit(run_gui(config_dir))
+             ~~~~~~~^^^^^^^^^^^^
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 43, in run_gui
+    window = MainWindow(config_dir)
+TypeError: MainWindow.__init__() takes 1 positional argument but 2 were given
+2025-02-23 23:40:34,226 [ERROR] trading_bot:159: Fatal error: module 'pyqtgraph' has no attribute 'CandlestickItem'
+Traceback (most recent call last):
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 68, in main
+    sys.exit(run_gui(config_dir))
+             ~~~~~~~^^^^^^^^^^^^
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 43, in run_gui
+    window = MainWindow(config_dir)
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\main_window.py", line 35, in __init__
+    self._init_components()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\main_window.py", line 59, in _init_components
+    self.chart_widget = ChartWidget()
+                        ~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\components\chart_widget.py", line 27, in __init__
+    self._init_ui()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\components\chart_widget.py", line 70, in _init_ui
+    self.candlesticks = pg.CandlestickItem()
+                        ^^^^^^^^^^^^^^^^^^
+AttributeError: module 'pyqtgraph' has no attribute 'CandlestickItem'
+2025-02-23 23:44:35,295 [ERROR] trading_bot:159: Fatal error: module 'pyqtgraph' has no attribute 'CandlestickItem'
+Traceback (most recent call last):
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 68, in main
+    sys.exit(run_gui(config_dir))
+             ~~~~~~~^^^^^^^^^^^^
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 43, in run_gui
+    window = MainWindow(config_dir)
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\main_window.py", line 37, in __init__
+    self._init_components()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\main_window.py", line 61, in _init_components
+    self.chart_widget = ChartWidget()
+                        ~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\components\chart_widget.py", line 27, in __init__
+    self._init_ui()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\components\chart_widget.py", line 70, in _init_ui
+    self.candlesticks = pg.CandlestickItem()
+                        ^^^^^^^^^^^^^^^^^^
+AttributeError: module 'pyqtgraph' has no attribute 'CandlestickItem'
+2025-02-23 23:45:29,030 [ERROR] trading_bot:159: Fatal error: must specify either x0 or width
+Traceback (most recent call last):
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 68, in main
+    sys.exit(run_gui(config_dir))
+             ~~~~~~~^^^^^^^^^^^^
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 43, in run_gui
+    window = MainWindow(config_dir)
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\main_window.py", line 37, in __init__
+    self._init_components()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\main_window.py", line 61, in _init_components
+    self.chart_widget = ChartWidget()
+                        ~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\components\chart_widget.py", line 27, in __init__
+    self._init_ui()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\components\chart_widget.py", line 72, in _init_ui
+    self.volume_bars = pg.BarGraphItem()
+                       ~~~~~~~~~~~~~~~^^
+  File "C:\Users\John\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pyqtgraph\graphicsItems\BarGraphItem.py", line 62, in __init__
+    self.setOpts(**opts)
+    ~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\John\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pyqtgraph\graphicsItems\BarGraphItem.py", line 68, in setOpts
+    self._prepareData()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\John\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pyqtgraph\graphicsItems\BarGraphItem.py", line 187, in _prepareData
+    x0, y0, x1, y1 = self._getNormalizedCoords()
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\John\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pyqtgraph\graphicsItems\BarGraphItem.py", line 143, in _getNormalizedCoords
+    raise Exception('must specify either x0 or width')
+Exception: must specify either x0 or width
+2025-02-23 23:46:09,002 [ERROR] trading_bot:159: Fatal error: must specify either y1 or height
+Traceback (most recent call last):
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 68, in main
+    sys.exit(run_gui(config_dir))
+             ~~~~~~~^^^^^^^^^^^^
+  File "c:\Users\John\CascadeProjects\trading_bot\run_bot.py", line 43, in run_gui
+    window = MainWindow(config_dir)
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\main_window.py", line 37, in __init__
+    self._init_components()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\main_window.py", line 61, in _init_components
+    self.chart_widget = ChartWidget()
+                        ~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\components\chart_widget.py", line 27, in __init__
+    self._init_ui()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\John\CascadeProjects\trading_bot\app\core\gui\components\chart_widget.py", line 72, in _init_ui
+    self.volume_bars = pg.BarGraphItem(x0=[0], width=0.8)
+                       ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\John\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pyqtgraph\graphicsItems\BarGraphItem.py", line 62, in __init__
+    self.setOpts(**opts)
+    ~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\John\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pyqtgraph\graphicsItems\BarGraphItem.py", line 68, in setOpts
+    self._prepareData()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\John\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pyqtgraph\graphicsItems\BarGraphItem.py", line 187, in _prepareData
+    x0, y0, x1, y1 = self._getNormalizedCoords()
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\John\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pyqtgraph\graphicsItems\BarGraphItem.py", line 171, in _getNormalizedCoords
+    raise Exception('must specify either y1 or height')
+Exception: must specify either y1 or height

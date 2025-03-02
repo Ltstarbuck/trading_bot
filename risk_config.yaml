@@ -1,0 +1,93 @@
+# Risk Management Configuration
+
+# Position Sizing
+position_sizing:
+  # Maximum position size as percentage of equity
+  max_size: 0.1  # 10%
+  
+  # Risk per trade as percentage of equity
+  risk_per_trade: 0.01  # 1%
+  
+  # Position sizing method
+  method: fixed_risk  # Options: fixed_risk, equal_weight, kelly
+  
+  # Kelly Criterion settings
+  kelly:
+    fraction: 0.5  # Half-kelly for conservative sizing
+    
+  # Correlation adjustment
+  correlation:
+    enabled: true
+    max_correlation: 0.7
+    lookback_period: 30  # days
+
+# Stop Loss
+stop_loss:
+  # Default stop loss percentage
+  default_stop: 0.02  # 2%
+  
+  # Trailing stop settings
+  trailing_stop:
+    enabled: true
+    activation_percent: 0.01  # 1%
+    trail_percent: 0.005  # 0.5%
+    
+  # Break even settings
+  break_even:
+    enabled: true
+    trigger_percent: 0.01  # 1%
+    offset: 0.001  # 0.1%
+
+# Risk Limits
+risk_limits:
+  # Maximum number of positions
+  max_positions: 5
+  
+  # Maximum drawdown before trading stops
+  max_drawdown: 0.1  # 10%
+  
+  # Daily loss limit
+  daily_loss_limit: 0.05  # 5%
+  
+  # Maximum leverage
+  max_leverage: 3
+  
+  # Exposure limits
+  exposure:
+    single_asset: 0.2  # 20%
+    asset_class: 0.4  # 40%
+    total: 0.8  # 80%
+
+# Liquidity Management
+liquidity:
+  # Minimum daily volume
+  min_daily_volume: 1000000  # USD
+  
+  # Maximum order size relative to volume
+  max_order_volume: 0.1  # 10% of volume
+  
+  # Slippage tolerance
+  max_slippage: 0.001  # 0.1%
+  
+  # Spread limits
+  max_spread: 0.002  # 0.2%
+
+# Portfolio Management
+portfolio:
+  # Rebalancing
+  rebalancing:
+    enabled: true
+    threshold: 0.1  # 10% deviation
+    frequency: daily
+    
+  # Diversification
+  diversification:
+    min_assets: 3
+    max_assets: 10
+    sector_limit: 0.4  # 40%
+    
+  # Correlation
+  correlation:
+    max_portfolio: 0.5
+    max_pair: 0.7
+    lookback_period: 30  # days
