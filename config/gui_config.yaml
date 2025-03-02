@@ -2,167 +2,198 @@
 
 # Window Settings
 window:
-  title: Trading Bot
-  width: 1600
-  height: 900
-  min_width: 1200
-  min_height: 700
+  title: "Trading Bot"
+  width: 1280
+  height: 800
+  min_width: 800
+  min_height: 600
   background_color: "#1E1E1E"
   
-# Theme
+# Theme Settings
 theme:
-  # Colors
+  # Color Scheme
   colors:
     primary: "#007ACC"
-    secondary: "#6C757D"
-    success: "#28A745"
-    danger: "#DC3545"
-    warning: "#FFC107"
-    info: "#17A2B8"
-    light: "#F8F9FA"
-    dark: "#343A40"
+    secondary: "#569CD6"
+    success: "#6A9955"
+    warning: "#CE9178"
+    error: "#F44747"
+    text_primary: "#D4D4D4"
+    text_secondary: "#808080"
+    background_primary: "#1E1E1E"
+    background_secondary: "#252526"
+    border: "#454545"
     
-  # Text
-  text:
-    font_family: "Segoe UI"
-    default_size: 12
-    header_size: 14
-    title_size: 16
-    
-  # Components
-  components:
-    button_height: 30
-    input_height: 25
-    padding: 10
-    border_radius: 4
-
-# Layout
+  # Font Settings
+  fonts:
+    main: "Segoe UI"
+    monospace: "Consolas"
+    sizes:
+      small: 10
+      normal: 12
+      large: 14
+      header: 16
+      
+  # Styles
+  styles:
+    button:
+      border_radius: 4
+      padding: [8, 16]
+      hover_color: "#2D2D2D"
+    input:
+      border_radius: 4
+      padding: [6, 12]
+      focus_color: "#007ACC"
+    table:
+      header_background: "#252526"
+      alternate_row_color: "#2D2D2D"
+      selected_row_color: "#094771"
+      
+# Layout Settings
 layout:
-  # Trading Panel
-  trading_panel:
-    position: left
-    width: 300
-    collapsible: true
+  # Main Areas
+  areas:
+    - trading
+    - charts
+    - orders
+    - positions
+    - logs
     
-  # Chart Widget
-  chart:
-    position: center
-    height_ratio: 0.6
-    default_timeframe: "1h"
-    max_candles: 1000
+  # Default Layout
+  default:
+    trading:
+      position: "left"
+      width: 300
+      collapsible: true
+    charts:
+      position: "center"
+      height: "60%"
+    orders:
+      position: "right"
+      width: 300
+      collapsible: true
+    positions:
+      position: "bottom"
+      height: "20%"
+    logs:
+      position: "bottom"
+      height: "20%"
+      
+# Chart Settings
+charts:
+  default_type: "candlestick"
+  supported_types:
+    - candlestick
+    - line
+    - area
+  timeframes:
+    - 1m
+    - 5m
+    - 15m
+    - 30m
+    - 1h
+    - 4h
+    - 1d
+  indicators:
+    - name: "Moving Average"
+      periods: [9, 20, 50, 200]
+    - name: "RSI"
+      period: 14
+    - name: "MACD"
+      settings:
+        fast: 12
+        slow: 26
+        signal: 9
+    - name: "Bollinger Bands"
+      period: 20
+  colors:
+    up: "#6A9955"
+    down: "#F44747"
+    volume: "#569CD6"
     
-  # Order Book
-  order_book:
-    position: right
-    width: 250
-    depth: 20
-    update_frequency: 1000  # ms
-    
-  # Position Table
-  position_table:
-    position: bottom
-    height_ratio: 0.2
+# Table Settings
+tables:
+  positions:
     columns:
       - Symbol
       - Side
-      - Size
+      - Amount
       - Entry Price
       - Current Price
-      - P&L
-      - P&L %
       - Stop Loss
       - Take Profit
-
-# Chart Settings
-chart:
-  # Candle Display
-  candles:
-    up_color: "#28A745"
-    down_color: "#DC3545"
-    wick_color: "#6C757D"
+      - P&L
+      - Duration
+    refresh_rate: 1  # seconds
     
-  # Grid
-  grid:
-    show: true
-    color: "#2D2D2D"
+  orders:
+    columns:
+      - Symbol
+      - Type
+      - Side
+      - Amount
+      - Price
+      - Status
+      - Time
+    refresh_rate: 1  # seconds
     
-  # Volume
-  volume:
-    show: true
-    height_ratio: 0.2
+  trades:
+    columns:
+      - Symbol
+      - Side
+      - Amount
+      - Entry Price
+      - Exit Price
+      - P&L
+      - Duration
+      - Time
+    max_rows: 1000
     
-  # Default Indicators
-  indicators:
-    - name: "SMA"
-      params: [20]
-      color: "#007ACC"
-    - name: "SMA"
-      params: [50]
-      color: "#FFC107"
-    - name: "RSI"
-      params: [14]
-      color: "#17A2B8"
-
-# Trading Panel Settings
-trading_panel:
-  # Order Types
+# Control Panel Settings
+controls:
+  trading_modes:
+    - Live
+    - Paper
+    - Backtest
   order_types:
     - Market
     - Limit
     - Stop
-    - Stop Limit
-    
-  # Default Values
-  defaults:
-    order_type: "Market"
-    time_in_force: "GTC"
-    post_only: false
-    
-  # Quick Trade Buttons
-  quick_trade:
-    enabled: true
-    sizes: [0.01, 0.05, 0.1, 0.5, 1.0]
-
-# Order Book Settings
-order_book:
-  # Display
-  grouping: 0.1  # Price grouping percentage
-  decimals: 2
-  
-  # Colors
-  asks_color: "#DC3545"
-  bids_color: "#28A745"
-  
-  # Depth Chart
-  depth_chart:
-    show: true
-    height_ratio: 0.3
-
-# Position Table Settings
-position_table:
-  # Display
-  show_closed: false
-  update_frequency: 1000  # ms
-  
-  # Sorting
-  default_sort: "P&L"
-  sort_direction: "descending"
-  
-  # Highlighting
-  highlight:
-    profit_color: "#28A745"
-    loss_color: "#DC3545"
-    threshold: 0.0
-
-# Notifications
+    - Take Profit
+  risk_controls:
+    position_size:
+      min: 0.0001
+      max: 10.0
+      step: 0.0001
+    leverage:
+      options: [1, 2, 3, 5, 10, 20]
+    stop_loss:
+      min: 0.1
+      max: 10.0
+      step: 0.1
+      
+# Notification Settings
 notifications:
-  # Types
-  show_orders: true
-  show_fills: true
-  show_stops: true
-  show_errors: true
-  
-  # Display
-  position: "top-right"
-  duration: 5000  # ms
-  max_notifications: 5
+  position_opened:
+    sound: true
+    popup: true
+  position_closed:
+    sound: true
+    popup: true
+  stop_loss_hit:
+    sound: true
+    popup: true
+  take_profit_hit:
+    sound: true
+    popup: true
+  error:
+    sound: true
+    popup: true
+    
+# Keyboard Shortcuts
+shortcuts:
+  cancel_all_orders: "Ctrl+Alt+C"
+  close_all_positions: "Ctrl+Alt+X"
+  toggle_trading: "Ctrl+T"
+  save_layout: "Ctrl+S"
+  reset_layout: "Ctrl+R"

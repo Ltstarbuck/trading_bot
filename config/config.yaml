@@ -1,0 +1,19 @@
+trading:
+  max_positions: 5
+  min_volatility: 0.01
+  max_position_size: 0.1
+  stop_loss_percent: 0.02
+  trailing_stop_percent: 0.01
+  break_even_padding: 0.002
+
+exchange:
+  exchange_id: "binance"
+  testnet: true
+
+notifications:
+  enable_sound: true
+  enable_visual: true
+  loss_alert_threshold: -0.05
+
+log_level: "INFO"
+data_dir: "data"

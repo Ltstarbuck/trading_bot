@@ -1,15 +1,75 @@
 # Exchange Configuration
 
-# Default exchange to use
-default_exchange: ftx
-
-# Global settings
+# Global Settings
+default_exchange: binance
 order_timeout: 30  # seconds
 max_retries: 3
 retry_delay: 5  # seconds
 
-# Exchange-specific settings
+# Exchange-specific Settings
 exchanges:
+  binance:
+    # API Configuration
+    api_url: https://api.binance.com
+    websocket_url: wss://stream.binance.com:9443/ws
+    test_mode: false
+    
+    # Rate Limits
+    rate_limits:
+      orders_per_second: 10
+      orders_per_day: 200000
+      weight_per_minute: 1200
+    
+    # Trading Parameters
+    min_order_size: 10.0  # USD
+    max_order_size: 1000000.0  # USD
+    price_precision: 8
+    quantity_precision: 8
+    
+    # Fees
+    maker_fee: 0.001  # 0.1%
+    taker_fee: 0.001  # 0.1%
+    
+    # Supported Order Types
+    order_types:
+      - LIMIT
+      - MARKET
+      - STOP_LOSS
+      - STOP_LOSS_LIMIT
+      - TAKE_PROFIT
+      - TAKE_PROFIT_LIMIT
+      
+  kraken:
+    # API Configuration
+    api_url: https://api.kraken.com
+    websocket_url: wss://ws.kraken.com
+    test_mode: false
+    
+    # Rate Limits
+    rate_limits:
+      orders_per_second: 5
+      orders_per_day: 100000
+      tier_1_calls_per_second: 15
+      tier_2_calls_per_second: 20
+    
+    # Trading Parameters
+    min_order_size: 10.0  # USD
+    max_order_size: 500000.0  # USD
+    price_precision: 5
+    quantity_precision: 8
+    
+    # Fees
+    maker_fee: 0.0016  # 0.16%
+    taker_fee: 0.0026  # 0.26%
+    
+    # Supported Order Types
+    order_types:
+      - LIMIT
+      - MARKET
+      - STOP_LOSS
+      - TAKE_PROFIT
+      - SETTLE_POSITION
+      
   ftx:
     # API Configuration
     api_url: https://ftx.com/api
@@ -39,66 +99,42 @@ exchanges:
       - STOP
       - STOP_LIMIT
       - TRAILING_STOP
-
-  binance:
-    # API Configuration
-    api_url: https://api.binance.com/api/v3
-    websocket_url: wss://stream.binance.com:9443/ws
-    test_mode: false
-    
-    # Rate Limits
-    rate_limits:
-      orders_per_second: 10
-      orders_per_day: 200000
-      requests_per_minute: 1200
-    
-    # Trading Parameters
-    min_order_size: 10.0  # USD
-    max_order_size: 1000000.0  # USD
-    price_precision: 8
-    quantity_precision: 8
-    
-    # Fees
-    maker_fee: 0.001  # 0.1%
-    taker_fee: 0.001  # 0.1%
-    
-    # Supported Order Types
-    order_types:
-      - LIMIT
-      - MARKET
-      - STOP_LOSS
-      - STOP_LOSS_LIMIT
-      - TAKE_PROFIT
-      - TAKE_PROFIT_LIMIT
-      - LIMIT_MAKER
-
-  kraken:
-    # API Configuration
-    api_url: https://api.kraken.com/0
-    websocket_url: wss://ws.kraken.com
-    test_mode: false
-    
-    # Rate Limits
-    rate_limits:
-      orders_per_second: 5
-      orders_per_day: 100000
-      requests_per_minute: 900
-    
-    # Trading Parameters
-    min_order_size: 10.0  # USD
-    max_order_size: 500000.0  # USD
-    price_precision: 5
-    quantity_precision: 8
-    
-    # Fees
-    maker_fee: 0.0016  # 0.16%
-    taker_fee: 0.0026  # 0.26%
-    
-    # Supported Order Types
-    order_types:
-      - MARKET
-      - LIMIT
-      - STOP_LOSS
-      - TAKE_PROFIT
-      - STOP_LOSS_LIMIT
-      - TAKE_PROFIT_LIMIT
+      
+# Market Data Settings
+market_data:
+  default_timeframe: 1m
+  supported_timeframes:
+    - 1m
+    - 5m
+    - 15m
+    - 30m
+    - 1h
+    - 4h
+    - 1d
+  max_candles: 1000
+  update_interval: 1  # seconds
+  
+# Order Management
+order_management:
+  default_timeout: 30  # seconds
+  max_open_orders: 50
+  cancel_on_disconnect: true
+  
+# Position Management
+position_management:
+  max_positions: 10
+  position_update_interval: 1  # seconds
+  auto_reduce_margin: true
+  
+# Error Handling
+error_handling:
+  max_consecutive_errors: 3
+  error_cooldown: 60  # seconds
+  critical_errors:
+    - INSUFFICIENT_FUNDS
+    - INVALID_CREDENTIALS
+    - MARKET_CLOSED
+  retry_errors:
+    - RATE_LIMIT
+    - TIMEOUT
+    - CONNECTION_ERROR

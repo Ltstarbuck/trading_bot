@@ -7,16 +7,16 @@ disable_existing_loggers: false
 # Formatters
 formatters:
   standard:
-    format: '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-    datefmt: '%Y-%m-%d %H:%M:%S'
+    format: "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
   
   detailed:
-    format: '%(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s'
-    datefmt: '%Y-%m-%d %H:%M:%S'
+    format: "%(asctime)s [%(levelname)s] %(name)s (%(filename)s:%(lineno)d): %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
   
   json:
     class: pythonjsonlogger.jsonlogger.JsonFormatter
-    format: '%(asctime)s %(name)s %(levelname)s %(message)s'
+    format: "%(asctime)s %(name)s %(levelname)s %(message)s"
 
 # Handlers
 handlers:
@@ -26,38 +26,38 @@ handlers:
     level: INFO
     formatter: standard
     stream: ext://sys.stdout
-
-  # Main Log File
+  
+  # File Handler for all logs
   file:
     class: logging.handlers.RotatingFileHandler
     level: INFO
     formatter: detailed
     filename: logs/trading_bot.log
     maxBytes: 10485760  # 10MB
-    backupCount: 10
+    backupCount: 5
     encoding: utf8
-
-  # Error Log File
+  
+  # Error File Handler
   error_file:
     class: logging.handlers.RotatingFileHandler
     level: ERROR
     formatter: detailed
     filename: logs/error.log
     maxBytes: 10485760  # 10MB
-    backupCount: 10
+    backupCount: 5
     encoding: utf8
-
-  # Trading Log File
+  
+  # Trading Activity Handler
   trading:
     class: logging.handlers.RotatingFileHandler
     level: INFO
     formatter: json
     filename: logs/trading.log
     maxBytes: 10485760  # 10MB
-    backupCount: 10
+    backupCount: 5
     encoding: utf8
-
-  # Performance Log File
+  
+  # Performance Metrics Handler
   performance:
     class: logging.handlers.RotatingFileHandler
     level: INFO
@@ -70,49 +70,97 @@ handlers:
 # Loggers
 loggers:
   # Root Logger
-  '':
+  root:
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+  
+  # Trading Bot Core
+  trading_bot:
     level: INFO
     handlers: [console, file, error_file]
-    propagate: false
-
-  # Trading Logger
-  trading:
+    propagate: no
+  
+  # Exchange Interface
+  trading_bot.exchanges:
+    level: INFO
+    handlers: [console, file, error_file]
+    propagate: no
+  
+  # Trading Activity
+  trading_bot.trading:
     level: INFO
     handlers: [trading, console]
-    propagate: false
-
-  # Exchange Logger
-  exchange:
+    propagate: no
+  
+  # Risk Management
+  trading_bot.risk:
     level: INFO
-    handlers: [file, error_file]
-    propagate: false
-
-  # Risk Management Logger
-  risk:
-    level: INFO
-    handlers: [file, error_file]
-    propagate: false
-
-  # Portfolio Logger
-  portfolio:
-    level: INFO
-    handlers: [file, trading]
-    propagate: false
-
-  # Strategy Logger
-  strategy:
-    level: INFO
-    handlers: [file, trading]
-    propagate: false
-
-  # Performance Logger
-  performance:
+    handlers: [console, file, error_file]
+    propagate: no
+  
+  # Performance Metrics
+  trading_bot.performance:
     level: INFO
     handlers: [performance]
-    propagate: false
-
-  # GUI Logger
-  gui:
+    propagate: no
+  
+  # External Bot Interface
+  trading_bot.external:
     level: INFO
-    handlers: [file]
-    propagate: false
+    handlers: [console, file, error_file]
+    propagate: no
+  
+  # GUI
+  trading_bot.gui:
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+
+# Logging Levels
+levels:
+  TRACE: 5
+  DEBUG: 10
+  INFO: 20
+  SUCCESS: 25
+  WARNING: 30
+  ERROR: 40
+  CRITICAL: 50
+
+# Additional Settings
+settings:
+  # Log Rotation
+  rotation:
+    when: midnight
+    interval: 1
+    backup_count: 30
+  
+  # Log Cleanup
+  cleanup:
+    max_age_days: 90
+    run_at: "00:00"
+  
+  # Performance Logging
+  performance:
+    enabled: true
+    interval: 60  # seconds
+    metrics:
+      - cpu_usage
+      - memory_usage
+      - disk_usage
+      - network_io
+  
+  # Error Tracking
+  error_tracking:
+    enabled: true
+    notify_on_error: true
+    max_traceback_depth: 10
+    
+  # Security
+  security:
+    mask_sensitive_data: true
+    sensitive_fields:
+      - api_key
+      - api_secret
+      - password
+      - token
