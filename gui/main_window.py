@@ -1,262 +1,337 @@
 """
-Main Application Window
+Main window implementation for the trading bot GUI
 """
 
 import sys
+from typing import Dict, Optional
+from datetime import datetime
 from decimal import Decimal
-from typing import Dict, List, Optional
-from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QComboBox, QSpinBox,
-    QDoubleSpinBox, QTableWidget, QTableWidgetItem,
-    QHeaderView, QTabWidget
-)
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QColor
-from loguru import logger
-import asyncio
-
-from ..config import ConfigManager
-from ..core.exchanges.exchange_factory import ExchangeFactory
-from ..core.portfolio.position_tracker import PositionTracker
-from .widgets.price_chart import PriceChart
-from .widgets.trade_table import TradeTable
-from .widgets.control_panel import ControlPanel
+from PyQt5.QtWidgets import (QMainWindow, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+                            QDockWidget, QMenuBar, QMenu, QAction, QStatusBar, QComboBox, QLabel)
+from PyQt5.QtCore import Qt, pyqtSignal, QSettings, QByteArray
+from .components.trading_panel import TradingPanel
+from .components.chart_widget import ChartWidget
+from .components.order_book import OrderBookWidget
+from .components.position_table import PositionTableWidget
+import mplfinance as mpf
+import pandas as pd
 
 class MainWindow(QMainWindow):
-    """Main application window"""
+    """Main window for the trading bot application"""
     
-    def __init__(
-        self,
-        config: ConfigManager,
-        exchange_factory: ExchangeFactory,
-        position_tracker: PositionTracker,
-        parent: Optional[QWidget] = None
-    ):
-        super().__init__(parent)
+    # Signals for real-time updates
+    ticker_updated = pyqtSignal(dict)
+    orderbook_updated = pyqtSignal(dict)
+    trade_updated = pyqtSignal(dict)
+    
+    def __init__(self, config_dir):
+        """Initialize main window"""
+        super().__init__()
+        self.config_dir = config_dir
+        self.default_state = QByteArray()  # Initialize default_state
+        self.securities_info = {
+            "BTC": {
+                "exchange": "Binance",
+                "prices": {
+                    "Binance": 50000,
+                    "Coinbase": 50500,
+                    "Kraken": 49800
+                }
+            },
+            "ETH": {
+                "exchange": "Coinbase",
+                "prices": {
+                    "Binance": 4000,
+                    "Coinbase": 4050,
+                    "Kraken": 3980
+                }
+            }
+        }
+        self.font_size = 16  # Store the default font size
+        self.initUI()
         
-        self.config = config
-        self.exchange_factory = exchange_factory
-        self.position_tracker = position_tracker
+        # Load settings
+        self.settings = QSettings('TradingBot', 'MainWindow')
         
-        self.setWindowTitle("Advanced Trading Bot")
-        self.setMinimumSize(1200, 800)
+        # Initialize components
+        self._init_components()
+        self._init_menu_bar()
+        self._init_status_bar()
+        self._init_dock_widgets()
+        self._init_shortcuts()
         
-        # Create main widget and layout
-        main_widget = QWidget()
-        self.setCentralWidget(main_widget)
-        layout = QVBoxLayout(main_widget)
+        # Load saved layout
+        self.load_layout()
         
-        # Create top section
-        self._create_top_section(layout)
+    def initUI(self):
+        self.setWindowTitle('Trading Bot')
+        self.setGeometry(100, 100, 1800, 800)  # Adjust width and height as needed
         
-        # Create middle section with tabs
-        self._create_middle_section(layout)
+        font = self.font()
+        font.setPointSize(self.font_size)
+        self.setFont(font)
         
-        # Create bottom section
-        self._create_bottom_section(layout)
+        # Create central widget
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
         
-        # Initialize data update timer
-        self._init_update_timer()
+        # Create layout
+        self.layout = QVBoxLayout(self.central_widget)
         
-    def _create_top_section(self, parent_layout: QVBoxLayout) -> None:
-        """Create top section of the GUI"""
-        top_widget = QWidget()
-        top_layout = QHBoxLayout(top_widget)
+        # Create controls layout
+        controls_layout = QHBoxLayout()
+        self.layout.addLayout(controls_layout)
+
+        # Trading mode selector
+        trading_mode_label = QLabel("Trading Mode:")
+        self.trading_mode_selector = QComboBox()
+        self.trading_mode_selector.addItems(["Live Trading", "Paper Trading"])
+        controls_layout.addWidget(trading_mode_label)
+        controls_layout.addWidget(self.trading_mode_selector)
+
+        # Connect the selection change signal
+        self.trading_mode_selector.currentTextChanged.connect(self.on_trading_mode_change)
+
+    def on_trading_mode_change(self, mode):
+        if mode == "Live Trading":
+            # Logic for live trading
+            print("Switched to Live Trading")
+        else:
+            # Logic for paper trading
+            print("Switched to Paper Trading")
+
+    def _init_components(self):
+        """Initialize GUI components"""
+        # Create components
+        self.trading_panel = TradingPanel()
+        self.chart_widget = ChartWidget()
+        self.order_book = OrderBookWidget()
+        self.position_table = PositionTableWidget()
         
-        # Mode selection buttons
-        mode_group = QWidget()
-        mode_layout = QHBoxLayout(mode_group)
+        # Connect signals
+        self.trading_panel.order_submitted.connect(self._handle_order_submission)
+        self.ticker_updated.connect(self._handle_ticker_update)
+        self.orderbook_updated.connect(self._handle_orderbook_update)
+        self.trade_updated.connect(self._handle_trade_update)
         
-        self.live_button = QPushButton("Live Trading")
-        self.paper_button = QPushButton("Paper Trading")
-        self.live_button.setCheckable(True)
-        self.paper_button.setCheckable(True)
-        self.paper_button.setChecked(True)  # Default to paper trading
+    def _init_menu_bar(self):
+        """Initialize menu bar"""
+        menu_bar = self.menuBar()
         
-        mode_layout.addWidget(self.live_button)
-        mode_layout.addWidget(self.paper_button)
+        # File menu
+        file_menu = menu_bar.addMenu('File')
+        file_menu.addAction('Save Layout', self.save_layout)
+        file_menu.addAction('Load Layout', self.load_layout)
+        file_menu.addAction('Reset Layout', self.reset_layout)
+        file_menu.addSeparator()
+        file_menu.addAction('Exit', self.close)
         
-        # Connect mode buttons
-        self.live_button.clicked.connect(self._on_live_mode_clicked)
-        self.paper_button.clicked.connect(self._on_paper_mode_clicked)
+        # View menu
+        view_menu = menu_bar.addMenu('View')
+        view_menu.addAction('Dark Theme',
+                          lambda: self.switch_theme('dark'))
+        view_menu.addAction('Light Theme',
+                          lambda: self.switch_theme('light'))
         
-        # Stats display
-        stats_group = QWidget()
-        stats_layout = QHBoxLayout(stats_group)
+        # Trading menu
+        trading_menu = menu_bar.addMenu('Trading')
+        self.cancel_all_orders_action = QAction('Cancel All Orders', self)
+        self.close_all_positions_action = QAction('Close All Positions', self)
+        trading_menu.addAction(self.cancel_all_orders_action)
+        trading_menu.addAction(self.close_all_positions_action)
         
-        self.daily_trades_label = QLabel("Daily Trades: 0")
-        self.weekly_trades_label = QLabel("Weekly Trades: 0")
-        self.daily_pnl_label = QLabel("Daily P&L: $0.00")
-        self.total_pnl_label = QLabel("Total P&L: $0.00")
-        self.liquid_balance_label = QLabel("Available: $0.00")
+    def _init_status_bar(self):
+        """Initialize status bar"""
+        status_bar = QStatusBar()
+        self.setStatusBar(status_bar)
         
-        stats_layout.addWidget(self.daily_trades_label)
-        stats_layout.addWidget(self.weekly_trades_label)
-        stats_layout.addWidget(self.daily_pnl_label)
-        stats_layout.addWidget(self.total_pnl_label)
-        stats_layout.addWidget(self.liquid_balance_label)
+        # Add status indicators
+        self.connection_status = QWidget()
+        self.connection_status.setFixedSize(16, 16)
+        status_bar.addPermanentWidget(self.connection_status)
         
-        # Add to top layout
-        top_layout.addWidget(mode_group)
-        top_layout.addStretch()
-        top_layout.addWidget(stats_group)
+    def _init_dock_widgets(self):
+        """Initialize dock widgets"""
+        # Trading panel dock
+        trading_dock = QDockWidget("Trading", self)
+        trading_dock.setWidget(self.trading_panel)
+        trading_dock.setAllowedAreas(Qt.LeftDockWidgetArea |
+                                   Qt.RightDockWidgetArea)
+        self.addDockWidget(Qt.LeftDockWidgetArea, trading_dock)
         
-        parent_layout.addWidget(top_widget)
+        # Order book dock
+        orderbook_dock = QDockWidget("Order Book", self)
+        orderbook_dock.setWidget(self.order_book)
+        orderbook_dock.setAllowedAreas(Qt.LeftDockWidgetArea |
+                                     Qt.RightDockWidgetArea)
+        self.addDockWidget(Qt.RightDockWidgetArea, orderbook_dock)
         
-    def _create_middle_section(self, parent_layout: QVBoxLayout) -> None:
-        """Create middle section with tabs"""
-        tab_widget = QTabWidget()
+        # Position table dock
+        position_dock = QDockWidget("Positions", self)
+        position_dock.setWidget(self.position_table)
+        position_dock.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self.addDockWidget(Qt.BottomDockWidgetArea, position_dock)
         
-        # Recommendations tab
-        self.recommendations_table = TradeTable(
-            ["Symbol", "Source", "Signal", "Volatility", "Price", "Volume"]
-        )
-        tab_widget.addTab(self.recommendations_table, "Recommendations")
+    def _init_shortcuts(self):
+        """Initialize keyboard shortcuts"""
+        # Cancel all orders: Ctrl+Alt+C
+        self.cancel_all_orders_action.setShortcut('Ctrl+Alt+C')
         
-        # Active positions tab
-        self.active_positions_table = TradeTable([
-            "Symbol", "Side", "Entry Price", "Current Price",
-            "Amount", "P&L", "Stop Loss", "Age"
-        ])
-        tab_widget.addTab(self.active_positions_table, "Active Positions")
+        # Close all positions: Ctrl+Alt+X
+        self.close_all_positions_action.setShortcut('Ctrl+Alt+X')
         
-        # Closed positions tab
-        self.closed_positions_table = TradeTable([
-            "Symbol", "Side", "Entry Price", "Exit Price",
-            "Amount", "P&L", "Duration", "Fees"
-        ])
-        tab_widget.addTab(self.closed_positions_table, "Closed Positions")
+    def save_layout(self):
+        """Save current window layout"""
+        self.settings.setValue('geometry', self.saveGeometry())
+        self.settings.setValue('windowState', self.saveState())
         
-        # Add chart
-        self.price_chart = PriceChart()
-        tab_widget.addTab(self.price_chart, "Charts")
+    def load_layout(self):
+        """Load saved window layout"""
+        geometry = self.settings.value('geometry')
+        state = self.settings.value('windowState')
         
-        parent_layout.addWidget(tab_widget)
+        if geometry:
+            self.restoreGeometry(geometry)
+        if state:
+            self.restoreState(state)
+            
+    def reset_layout(self):
+        """Reset to default layout"""
+        self.resize(1280, 800)
+        self.restoreState(self.default_state)
         
-    def _create_bottom_section(self, parent_layout: QVBoxLayout) -> None:
-        """Create bottom section with controls"""
-        self.control_panel = ControlPanel(self.config)
-        parent_layout.addWidget(self.control_panel)
+    def switch_theme(self, theme: str):
+        """Switch between light and dark themes"""
+        if theme == 'dark':
+            self.setStyleSheet(self._get_dark_theme())
+        else:
+            self.setStyleSheet(self._get_light_theme())
+        font = self.font()
+        font.setPointSize(self.font_size)
+        self.setFont(font)
+            
+    def _get_dark_theme(self) -> str:
+        """Get dark theme stylesheet"""
+        return """
+            QMainWindow {
+                background-color: #1E1E1E;
+                color: #D4D4D4;
+            }
+            QWidget {
+                background-color: #1E1E1E;
+                color: #D4D4D4;
+            }
+            QMenuBar {
+                background-color: #252526;
+                color: #D4D4D4;
+            }
+            QStatusBar {
+                background-color: #252526;
+                color: #D4D4D4;
+            }
+        """
         
-        # Connect control panel signals
-        self.control_panel.strategy_changed.connect(self._on_strategy_changed)
-        self.control_panel.security_type_changed.connect(self._on_security_type_changed)
-        self.control_panel.position_limit_changed.connect(self._on_position_limit_changed)
-        self.control_panel.investment_limit_changed.connect(self._on_investment_limit_changed)
-        self.control_panel.stop_loss_changed.connect(self._on_stop_loss_changed)
+    def _get_light_theme(self) -> str:
+        """Get light theme stylesheet"""
+        return """
+            QMainWindow {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+            QWidget {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+            QMenuBar {
+                background-color: #F0F0F0;
+                color: #000000;
+            }
+            QStatusBar {
+                background-color: #F0F0F0;
+                color: #000000;
+            }
+        """
         
-    def _init_update_timer(self) -> None:
-        """Initialize data update timer"""
-        self.update_timer = QTimer()
-        self.update_timer.timeout.connect(self._update_data)
-        self.update_timer.start(5000)  # Update every 5 seconds
-        
-    def _update_data(self) -> None:
-        """Update all dynamic data"""
+    async def _handle_order_submission(self, order: Dict):
+        """Handle order submission from trading panel"""
         try:
-            # Update position data
-            self._update_positions()
+            # Create order
+            result = await self.trading_bot.create_order(**order)
             
-            # Update statistics
-            self._update_statistics()
-            
-            # Update recommendations
-            self._update_recommendations()
+            # Update UI
+            self.status_bar.showMessage(
+                f"Order created: {result['id']}", 5000)
             
         except Exception as e:
-            logger.error(f"Error updating data: {str(e)}")
+            self.status_bar.showMessage(
+                f"Order error: {str(e)}", 5000)
             
-    def _update_positions(self) -> None:
-        """Update position tables"""
-        # Update active positions
-        active_positions = self.position_tracker.get_all_positions()
-        self.active_positions_table.update_data([
-            self._format_position_data(pos) for pos in active_positions
-        ])
+    async def _handle_ticker_update(self, data: Dict):
+        """Handle ticker updates"""
+        # Update chart
+        self.chart_widget.update_price(
+            Decimal(data['price']),
+            datetime.fromtimestamp(data['timestamp'])
+        )
         
-        # Update closed positions
-        closed_positions = self.position_tracker.get_closed_positions()
-        self.closed_positions_table.update_data([
-            self._format_closed_position_data(pos) for pos in closed_positions
-        ])
+        # Update order book
+        self.order_book.update_best_prices(
+            Decimal(data['bid']),
+            Decimal(data['ask'])
+        )
         
-    def _update_statistics(self) -> None:
-        """Update statistical displays"""
-        # Update P&L displays
-        total_pnl = self.position_tracker.get_total_pnl()
-        self.total_pnl_label.setText(f"Total P&L: ${total_pnl:.2f}")
+    async def _handle_orderbook_update(self, data: Dict):
+        """Handle orderbook updates"""
+        self.order_book.update_data(data)
         
-        # Color code based on profit/loss
-        if total_pnl > 0:
-            self.total_pnl_label.setStyleSheet("color: green")
-        elif total_pnl < 0:
-            self.total_pnl_label.setStyleSheet("color: red")
-        else:
-            self.total_pnl_label.setStyleSheet("")
-            
-    def _update_recommendations(self) -> None:
-        """Update recommendation table"""
-        # This would be updated with actual bot recommendations
-        pass
+    async def _handle_trade_update(self, data: Dict):
+        """Handle trade updates"""
+        # Update position table
+        self.position_table.update_position(
+            data['symbol'],
+            Decimal(data['price'])
+        )
         
-    def _format_position_data(self, position) -> List:
-        """Format position data for display"""
-        return [
-            position.symbol,
-            position.side,
-            f"${float(position.entry_price):.2f}",
-            f"${float(position.current_price):.2f}",
-            f"{float(position.amount):.4f}",
-            f"${float(position.unrealized_pnl):.2f}",
-            f"${float(position.stop_loss):.2f}",
-            str(position.entry_time)
+        # Update chart
+        self.chart_widget.add_trade(
+            Decimal(data['price']),
+            Decimal(data['amount']),
+            data['side'],
+            datetime.fromtimestamp(data['timestamp'])
+        )
+
+    def plot_candlestick_chart(self, data):
+        # Create a DataFrame
+        df = pd.DataFrame(data)
+        df['Date'] = pd.to_datetime(df['Date'])
+        df.set_index('Date', inplace=True)
+
+        # Plot the candlestick chart
+        mpf.plot(df, type='candle', style='charles', title='Candlestick Chart', volume=False)
+
+    def show_candlestick_chart(self):
+        # Example data
+        data = [
+            {'Date': '2022-01-01', 'Open': 100, 'High': 120, 'Low': 90, 'Close': 110},
+            {'Date': '2022-01-02', 'Open': 110, 'High': 130, 'Low': 100, 'Close': 120},
+            {'Date': '2022-01-03', 'Open': 120, 'High': 140, 'Low': 110, 'Close': 130},
         ]
-        
-    def _format_closed_position_data(self, position) -> List:
-        """Format closed position data for display"""
-        duration = position.exit_time - position.entry_time
-        return [
-            position.symbol,
-            position.side,
-            f"${float(position.entry_price):.2f}",
-            f"${float(position.current_price):.2f}",
-            f"{float(position.amount):.4f}",
-            f"${float(position.realized_pnl):.2f}",
-            str(duration),
-            f"${float(position.fees):.2f}"
-        ]
-        
-    def _on_live_mode_clicked(self) -> None:
-        """Handle live mode button click"""
-        if self.live_button.isChecked():
-            self.paper_button.setChecked(False)
-            # Implement live mode logic
-            logger.info("Switching to live trading mode")
-            
-    def _on_paper_mode_clicked(self) -> None:
-        """Handle paper mode button click"""
-        if self.paper_button.isChecked():
-            self.live_button.setChecked(False)
-            # Implement paper mode logic
-            logger.info("Switching to paper trading mode")
-            
-    def _on_strategy_changed(self, strategy: str) -> None:
-        """Handle strategy change"""
-        logger.info(f"Strategy changed to: {strategy}")
-        
-    def _on_security_type_changed(self, security_type: str) -> None:
-        """Handle security type change"""
-        logger.info(f"Security type changed to: {security_type}")
-        
-    def _on_position_limit_changed(self, limit: int) -> None:
-        """Handle position limit change"""
-        logger.info(f"Position limit changed to: {limit}")
-        
-    def _on_investment_limit_changed(self, limit: float) -> None:
-        """Handle investment limit change"""
-        logger.info(f"Investment limit changed to: ${limit}")
-        
-    def _on_stop_loss_changed(self, stop_loss: float) -> None:
-        """Handle stop loss change"""
-        logger.info(f"Stop loss changed to: {stop_loss}%")
+        self.plot_candlestick_chart(data)
+
+    def display_security_info(self):
+        for symbol, info in self.securities_info.items():
+            print(f"{symbol} bought on {info['exchange']} at prices: {info['prices']}")
+
+    def display_exchange_and_prices(self):
+        for symbol, info in self.securities_info.items():
+            print(f"{symbol}: {info['exchange']} - {info['prices']}")
+
+# Example usage
+if __name__ == "__main__":
+    import sys
+    app = QApplication(sys.argv)
+    window = MainWindow("config_dir")
+    window.show_candlestick_chart()
+    window.display_security_info()
+    window.display_exchange_and_prices()
+    sys.exit(app.exec_())
